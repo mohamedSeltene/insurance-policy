@@ -1,0 +1,31 @@
+
+services:
+  mysql-container:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: insurance_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  app-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: insurance-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/insurance_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+
+volumes:
+  mysql-data:
